@@ -42,6 +42,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <math.h>
 #include <float.h>
 
@@ -133,6 +134,12 @@ public:
 	uint8_t determineWarning(float state_of_charge);
 	void updateDt(const hrt_abstime &timestamp);
 
+	/**
+	 * Compute max-min delta over a cell-voltage array. Cells with value <= 0 are ignored.
+	 * @return Delta in volts, or 0 if no valid cells.
+	 */
+	static float computeMaxCellVoltageDelta(const float *cells, size_t n);
+
 protected:
 	static constexpr float LITHIUM_BATTERY_RECOGNITION_VOLTAGE = 2.1f;
 
@@ -199,6 +206,8 @@ private:
 	uint8_t _warning{battery_status_s::WARNING_NONE};
 	float _dt{0.f};
 	float _capacity_mah{0.f};
+	float _cell_voltages[sizeof(((battery_status_s *)nullptr)->voltage_cell_v) / sizeof(float)] {};
+	float _max_cell_voltage_delta{0.f};
 	hrt_abstime _last_timestamp{0};
 	bool _armed{false};
 	bool _vehicle_status_is_fw{false};
