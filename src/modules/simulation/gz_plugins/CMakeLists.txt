@@ -33,6 +33,24 @@
 
 project(px4_gz_plugins)
 
+# On macOS, Homebrew's Qt5 prefix is often not part of the default CMake search path.
+# gz-sim pulls in gz-gui, which exports Qt5::* imported targets.
+if(APPLE AND NOT DEFINED Qt5_DIR)
+    set(_px4_qt5_prefixes
+        "/opt/homebrew/opt/qt@5"
+        "/usr/local/opt/qt@5"
+    )
+
+    foreach(_px4_qt5_prefix IN LISTS _px4_qt5_prefixes)
+        if(EXISTS "${_px4_qt5_prefix}/lib/cmake/Qt5/Qt5Config.cmake")
+            list(PREPEND CMAKE_PREFIX_PATH "${_px4_qt5_prefix}")
+            set(Qt5_DIR "${_px4_qt5_prefix}/lib/cmake/Qt5" CACHE PATH "Qt5 CMake directory")
+            message(STATUS "Found Homebrew Qt5 at ${_px4_qt5_prefix}")
+            break()
+        endif()
+    endforeach()
+endif()
+
 if(NOT DEFINED ENV{GZ_DISTRO} OR NOT "$ENV{GZ_DISTRO}"  STREQUAL "harmonic")
     find_package(gz-transport NAMES gz-transport gz-transport14 gz-transport13)
     find_package(gz-sim NAMES gz-sim gz-sim9 gz-sim8)

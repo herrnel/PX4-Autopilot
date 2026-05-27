@@ -19,3 +19,9 @@ export PX4_GZ_SERVER_CONFIG=@PX4_SOURCE_DIR@/src/modules/simulation/gz_bridge/se
 export GZ_SIM_RESOURCE_PATH=$GZ_SIM_RESOURCE_PATH:$PX4_GZ_MODELS:$PX4_GZ_WORLDS
 export GZ_SIM_SYSTEM_PLUGIN_PATH=$GZ_SIM_SYSTEM_PLUGIN_PATH:$PX4_GZ_PLUGINS
 export GZ_SIM_SERVER_CONFIG_PATH=$PX4_GZ_SERVER_CONFIG
+
+# macOS runtime loading helpers for Homebrew-provided Gazebo/GStreamer deps.
+if [ "$(uname)" = "Darwin" ]; then
+	export DYLD_FALLBACK_LIBRARY_PATH=/usr/local/lib:/opt/homebrew/lib:${DYLD_FALLBACK_LIBRARY_PATH}
+	export GI_TYPELIB_PATH=/usr/local/lib/girepository-1.0:/opt/homebrew/lib/girepository-1.0:${GI_TYPELIB_PATH}
+fi

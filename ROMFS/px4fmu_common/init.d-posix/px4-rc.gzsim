@@ -3,7 +3,13 @@
 
 # Enforce minimum gz version as Harmonic (gz-sim8)
 MIN_GZ_VERSION="8.0.0"
-GZ_SIM_VERSION=$(gz sim --versions 2>/dev/null | head -n 1 | tr -d ' ')
+PREFERRED_GZ_MAJOR="8"
+GZ_SIM_VERSIONS=$(gz sim --versions 2>/dev/null | tr -d ' ')
+GZ_SIM_VERSION=$(printf '%s\n' "$GZ_SIM_VERSIONS" | grep -m 1 -E "^${PREFERRED_GZ_MAJOR}[.]")
+
+if [ -z "$GZ_SIM_VERSION" ]; then
+	GZ_SIM_VERSION=$(printf '%s\n' "$GZ_SIM_VERSIONS" | head -n 1)
+fi
 
 if [ -z "$GZ_SIM_VERSION" ]; then
 	echo "ERROR [init] Gazebo gz sim not found. Please install gz-harmonic"
@@ -13,9 +19,10 @@ fi
 # Use sort compare, check that MIN_GZ_VERSION is ordered last
 if [ "$(printf '%s\n' "$GZ_SIM_VERSION" "$MIN_GZ_VERSION" | sort -V | head -n1)" = "$MIN_GZ_VERSION" ]; then
 	gz_command="gz"
-	gz_sub_command="sim"
+	GZ_SIM_MAJOR_VERSION="${GZ_SIM_VERSION%%.*}"
+	gz_sub_command="sim --force-version ${GZ_SIM_MAJOR_VERSION}"
 
-	echo "INFO  [init] Gazebo simulator $GZ_SIM_VERSION"
+	echo "INFO  [init] Gazebo simulator $GZ_SIM_VERSION (forced major ${GZ_SIM_MAJOR_VERSION})"
 
 	# Specify render engine if `GZ_SIM_RENDER_ENGINE` is set
 	# (for example, if you want to use Ogre 1.x instead of Ogre 2.x):

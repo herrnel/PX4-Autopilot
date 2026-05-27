@@ -73,7 +73,7 @@ function(px4_add_common_flags)
 		-Warray-bounds
 		-Wcast-align
 		-Wdisabled-optimization
-		-Wdouble-promotion
+		-Wno-double-promotion
 		-Wfatal-errors
 		-Wfloat-equal
 		-Wformat-security

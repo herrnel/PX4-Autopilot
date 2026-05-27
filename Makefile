@@ -162,6 +162,15 @@ else
 
 endif
 
+# Prefer project-local venv Python on macOS/Linux when available.
+# This avoids host-level interpreter/package mismatches while still allowing
+# users to override via PYTHON_EXECUTABLE.
+ifndef PYTHON_EXECUTABLE
+ifneq ("$(wildcard $(SRC_DIR)/.venv-px4/bin/python3)","")
+	PYTHON_EXECUTABLE := $(SRC_DIR)/.venv-px4/bin/python3
+endif
+endif
+
 # Pick up specific Python path if set
 ifdef PYTHON_EXECUTABLE
 	override CMAKE_ARGS += -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}

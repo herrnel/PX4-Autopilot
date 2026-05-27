@@ -64,6 +64,13 @@ target_include_directories(${PROJECT_NAME}
 
 add_dependencies(${PROJECT_NAME} OpticalFlow)
 
+# Ensure the plugin can resolve libOpticalFlow at runtime when loaded by gz-sim.
+get_filename_component(_optical_flow_lib_dir "${OpticalFlow_LIBS}" DIRECTORY)
+if(_optical_flow_lib_dir)
+    set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY BUILD_RPATH "${_optical_flow_lib_dir}")
+    set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY INSTALL_RPATH "${_optical_flow_lib_dir}")
+endif()
+
 if (NOT CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib/px4_gz_plugins)
 endif()
